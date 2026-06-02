@@ -11,7 +11,7 @@ if not BOT_TOKEN:
     # This allows static assets/pages to be served and lets the developer see the error log or configure it.
     if "VERCEL" in os.environ or os.getenv("VERCEL") == "1":
         print("[Warning] TELEGRAM_BOT_TOKEN is not set in Vercel environment variables. Using hardcoded fallback.")
-        BOT_TOKEN = "8782152988:AAFeRC1L-lfe8tB7mB0ihFU1SnkX0YBEhm8"
+        BOT_TOKEN = "8530598432:AAF1bbxxRvPz-MsfPvoisBr-rKJVkLTE4nA"
     else:
         raise ValueError("TELEGRAM_BOT_TOKEN is not set in the environment variables.")
 
