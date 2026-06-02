@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure P2P Crypto Exchange</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Telegram Web Apps SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Smooth Loading Splash Overlay -->
+    <div id="loader" class="loader-overlay">
+        <div class="loader-content">
+            <div class="coin-logo">
+                <div class="coin-face">
+                    <span class="coin-symbol">💱</span>
+                </div>
+                <div class="coin-pulse"></div>
+            </div>
+            <h2>P2P Exchange</h2>
+            <p>Loading secure trading platform...</p>
+            <div class="spinner-bar">
+                <div class="spinner-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification System -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand">
+                <span class="brand-icon">💱</span>
+                <div>
+                    <h1>P2P Exchange</h1>
+                    <span class="badge badge-success">Active Service</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- User Authentication Card -->
+        <section class="card profile-card">
+            <div class="card-header">
+                <i data-lucide="user-check" class="header-icon icon-blue"></i>
+                <h2>Trader Profile</h2>
+            </div>
+            <div class="profile-details">
+                <div class="avatar-placeholder" id="user-avatar">
+                    <span id="avatar-initials">U</span>
+                </div>
+                <div class="user-info">
+                    <h3 id="user-fullname">Loading Name...</h3>
+                    <p class="username-tag" id="user-username">@username</p>
+                    <p class="tg-id-tag">Telegram ID: <span id="user-tgid" class="code-font">---------</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wallet Connection Card -->
+        <section class="card wallet-card" id="wallet-section">
+            <div class="card-header">
+                <i data-lucide="wallet" class="header-icon icon-purple"></i>
+                <h2>Crypto Wallet</h2>
+            </div>
+            
+            <!-- Disconnected State -->
+            <div id="wallet-disconnected" class="wallet-state active">
+                <p class="card-desc">Connect your Web3 crypto wallet to verify and proceed with your transaction.</p>
+                <button class="btn btn-primary btn-full" id="btn-connect-wallet">
+                    <i data-lucide="link"></i> Connect Crypto Wallet
+                </button>
+            </div>
+            
+            <!-- Connection Progress State -->
+            <div id="wallet-connecting" class="wallet-state hidden">
+                <div class="connecting-loader">
+                    <div class="spinner"></div>
+                    <p>Requesting signature & linking wallet...</p>
+                </div>
+            </div>
+
+            <!-- Connected State -->
+            <div id="wallet-connected" class="wallet-state hidden">
+                <div class="connected-badge">
+                    <span class="dot pulse-green"></span>
+                    <span>Wallet Connected</span>
+                </div>
+                <div class="wallet-address-container">
+                    <div class="wallet-details">
+                        <span class="network-label">EVN Network</span>
+                        <span id="display-wallet-address" class="wallet-address code-font">0x0000...0000</span>
+                    </div>
+                    <button class="btn-icon" id="btn-copy-user-wallet" title="Copy Wallet Address">
+                        <i data-lucide="copy"></i>
+                    </button>
+                </div>
+                <button class="btn btn-secondary btn-full btn-small" id="btn-disconnect-wallet">
+                    <i data-lucide="link-2-off"></i> Disconnect Wallet
+                </button>
+            </div>
+        </section>
+
+        <!-- P2P Trading / Transfer Card -->
+        <section class="card exchange-card disabled-card" id="exchange-section">
+            <div class="card-header">
+                <i data-lucide="arrow-left-right" class="header-icon icon-emerald"></i>
+                <h2>Sell Cryptocurrency</h2>
+            </div>
+
+            <!-- Lock Overlay if Wallet not connected -->
+            <div class="lock-overlay" id="exchange-lock-overlay">
+                <i data-lucide="lock" class="lock-icon"></i>
+                <p>Please connect your crypto wallet above to enable trading forms.</p>
+            </div>
+
+            <form id="p2p-exchange-form" onsubmit="return false;">
+                
+                <!-- Crypto Type Selector -->
+                <div class="form-group">
+                    <label class="form-label">1. Select Asset to Sell</label>
+                    <div class="crypto-selector">
+                        <div class="crypto-option active" data-crypto="USDT">
+                            <span class="crypto-icon icon-usdt">₮</span>
+                            <span class="crypto-name">USDT</span>
+                        </div>
+                        <div class="crypto-option" data-crypto="BTC">
+                            <span class="crypto-icon icon-btc">₿</span>
+                            <span class="crypto-name">BTC</span>
+                        </div>
+                        <div class="crypto-option" data-crypto="ETH">
+                            <span class="crypto-icon icon-eth">♦</span>
+                            <span class="crypto-name">ETH</span>
+                        </div>
+                        <div class="crypto-option" data-crypto="TON">
+                            <span class="crypto-icon icon-ton">💎</span>
+                            <span class="crypto-name">TON</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Wallet Box -->
+                <div class="form-group">
+                    <label class="form-label">2. Send Asset to Admin Wallet</label>
+                    <div class="company-wallet-box">
+                        <p class="wallet-desc">Transfer your crypto to the official company exchange wallet below:</p>
+                        <div class="wallet-value-container">
+                            <span id="company-wallet-address" class="company-wallet code-font">Fetching wallet address...</span>
+                            <button type="button" class="btn-icon" id="btn-copy-company-wallet" title="Copy Wallet Address">
+                                <i data-lucide="copy"></i>
+                            </button>
+                        </div>
+                        <div class="important-notice">
+                            <i data-lucide="alert-circle" class="notice-icon"></i>
+                            <span>Transfer matching amount. Only send the selected asset to this address!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Details Form -->
+                <div class="form-group">
+                    <label class="form-label" for="input-amount">3. Amount Sent</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="input-amount" step="any" min="0.000001" placeholder="0.00" required>
+                        <span class="input-suffix" id="amount-crypto-suffix">USDT</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="input-hash">4. Transaction Hash / TXID</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="hash" class="input-prefix-icon"></i>
+                        <input type="text" id="input-hash" placeholder="Enter transaction hash" required>
+                    </div>
+                </div>
+
+                <!-- Transaction Proof File Upload (Optional) -->
+                <div class="form-group">
+                    <label class="form-label">5. Transaction Proof Image (Optional)</label>
+                    <div class="file-upload-zone" id="file-upload-zone">
+                        <input type="file" id="input-proof-image" accept="image/*" class="file-hidden-input">
+                        <div class="upload-prompt" id="upload-prompt">
+                            <i data-lucide="image" class="upload-icon"></i>
+                            <span>Tap to upload receipt/screenshot</span>
+                            <p class="file-limits">Supports JPG, PNG (Max 5MB)</p>
+                        </div>
+                        <div class="upload-preview hidden" id="upload-preview-container">
+                            <img id="upload-preview-img" src="#" alt="Proof screenshot">
+                            <button type="button" class="btn-remove-file" id="btn-remove-proof" title="Remove image">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-accent btn-full btn-large" id="btn-submit-tx" disabled>
+                    Submit Transaction for Verification
+                </button>
+            </form>
+        </section>
+
+        <!-- Transaction History Card -->
+        <section class="card history-card">
+            <div class="card-header">
+                <i data-lucide="history" class="header-icon icon-orange"></i>
+                <h2>Recent Transactions</h2>
+            </div>
+            
+            <div id="history-loading" class="history-state hidden">
+                <div class="history-spinner"></div>
+                <p>Loading history records...</p>
+            </div>
+            
+            <div id="history-empty" class="history-state active">
+                <i data-lucide="folder-open" class="empty-icon"></i>
+                <p>No transaction history found</p>
+            </div>
+            
+            <div id="history-list" class="history-list hidden">
+                <!-- Dynamic transaction items injected here -->
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Protected by Telegram Secure WebApp Gateway</p>
+            <p class="copyright">&copy; 2026 P2P Exchange Inc.</p>
+        </footer>
+    </div>
+
+    <!-- Success Modal Overlay -->
+    <div id="success-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="success-checkmark">
+                <div class="check-icon">
+                    <span class="icon-line line-tip"></span>
+                    <span class="icon-line line-long"></span>
+                    <div class="icon-circle"></div>
+                    <div class="icon-fix"></div>
+                </div>
+            </div>
+            <h2>Transaction Submitted!</h2>
+            <p class="modal-desc">Your transaction details have been sent to our system administrators for manual verification.</p>
+            
+            <div class="modal-details text-left">
+                <div class="detail-row">
+                    <span>Reference ID:</span>
+                    <strong id="success-ref-id" class="code-font">#0000</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Amount Sent:</span>
+                    <strong id="success-amount">0.00 USDT</strong>
+                </div>
+            </div>
+            
+            <button class="btn btn-accent btn-full" id="btn-close-success">
+                Done & Continue
+            </button>
+        </div>
+    </div>
+
+    <!-- Custom App Javascript -->
+    <script src="js/app.js"></script>
+</body>
+</html>
