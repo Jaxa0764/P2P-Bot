@@ -7,7 +7,13 @@ load_dotenv()
 # Telegram configurations
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 if not BOT_TOKEN:
-    raise ValueError("TELEGRAM_BOT_TOKEN is not set in the environment variables.")
+    # If running on Vercel, do not crash the initialization if the token is missing.
+    # This allows static assets/pages to be served and lets the developer see the error log or configure it.
+    if "VERCEL" in os.environ or os.getenv("VERCEL") == "1":
+        print("[Warning] TELEGRAM_BOT_TOKEN is not set in Vercel environment variables. Using placeholder.")
+        BOT_TOKEN = "DUMMY_TOKEN"
+    else:
+        raise ValueError("TELEGRAM_BOT_TOKEN is not set in the environment variables.")
 
 # Admin IDs to notify (convert comma-separated string to a list of ints)
 admin_ids_str = os.getenv("ADMIN_CHAT_IDS", "")

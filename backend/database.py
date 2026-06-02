@@ -26,7 +26,11 @@ else:
     print(f"[DB] Firebase key not found at {config.FIREBASE_KEY_PATH}. Using SQLite local fallback.")
 
 # SQLite Fallback configuration
-SQLITE_DB_PATH = "p2p_exchange.db"
+# Vercel environment has a read-only filesystem, except for the /tmp directory.
+if "VERCEL" in os.environ or os.getenv("VERCEL") == "1":
+    SQLITE_DB_PATH = "/tmp/p2p_exchange.db"
+else:
+    SQLITE_DB_PATH = "p2p_exchange.db"
 
 def init_sqlite():
     """Initializes local SQLite database and creates tables if they do not exist."""

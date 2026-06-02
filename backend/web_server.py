@@ -13,7 +13,11 @@ template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'st
 app = Flask(__name__, static_folder=template_dir, static_url_path='')
 
 # Ensure uploads directory exists
-UPLOAD_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'uploads'))
+# Vercel environment has a read-only filesystem, except for /tmp directory.
+if "VERCEL" in os.environ or os.getenv("VERCEL") == "1":
+    UPLOAD_FOLDER = "/tmp/uploads"
+else:
+    UPLOAD_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'uploads'))
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def save_proof_image(base64_data):
