@@ -1,9 +1,11 @@
+import os
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 import datetime
 from . import config
 
 # Initialize the Bot with the bot token
+# On Vercel, bot is initialized but polling is never started (no conflict)
 bot = telebot.TeleBot(config.BOT_TOKEN)
 
 @bot.message_handler(commands=['start'])
@@ -75,6 +77,17 @@ def send_admin_notification(tx_data):
         return False
 
 def start_bot_polling():
-    """Starts the bot in infinite polling mode."""
+    """Starts the bot in infinite polling mode. Skipped on Vercel."""
+    import time
+    # Vercel is a serverless environment — polling must NOT run there.
+    # The local runner (app.py) is responsible for polling.
+    if "VERCEL" in os.environ or os.getenv("VERCEL") == "1":
+        print("[Bot] Running on Vercel — skipping polling (use local runner or webhook instead).")
+        return
     print("[Bot] Telegram Bot starting infinity polling...")
-    bot.infinity_polling()
+    while True:
+        try:
+            bot.infinity_polling(timeout=60, long_polling_timeout=60)
+        except Exception as e:
+            print(f"[Bot] Polling crashed: {e}. Restarting in 5 seconds...")
+            time.sleep(5)
