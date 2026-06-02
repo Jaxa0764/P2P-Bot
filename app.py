@@ -2,7 +2,12 @@ import threading
 import sys
 import os
 from backend.bot import start_bot_polling
-from backend.web_server import run_server
+from backend.web_server import run_server, app
+
+# Expose the Flask application instance for Vercel and other WSGI/ASGI servers
+# Vercel looks for a top-level variable named 'app' in app.py by default.
+expose_app_for_vercel = app
+
 
 if __name__ == "__main__":
     print("==================================================================")
